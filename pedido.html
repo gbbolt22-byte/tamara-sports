@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tamara Sports — Monte seu Uniforme</title>
+  <!-- SheetJS para Excel real -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #020617; color: #fff; font-family: Arial, sans-serif; }
+    select, input { font-family: inherit; }
+    .rounded-3xl { border-radius: 1.5rem; }
+    .rounded-2xl { border-radius: 1rem; }
+    .rounded-full { border-radius: 9999px; }
+    .ring-1 { box-shadow: 0 0 0 1px var(--ring-color, rgba(255,255,255,0.1)); }
+    .ring-white\/10 { --ring-color: rgba(255,255,255,0.1); box-shadow: 0 0 0 1px rgba(255,255,255,0.1); }
+    .from-slate-900 { --tw-gradient-from: #0f172a; }
+    .to-slate-800 { --tw-gradient-to: #1e293b; }
+    .bg-gradient-to-br { background-image: linear-gradient(to bottom right, var(--tw-gradient-from), var(--tw-gradient-to)); }
+    .min-h-screen { min-height: 100vh; }
+    .text-slate-950 { color: #020617; }
+    .bg-slate-950 { background: #020617; }
+    .bg-slate-900 { background: #0f172a; }
+    .text-yellow-300 { color: #fde047; }
+    .bg-yellow-400\/10 { background: rgba(250,204,21,0.1); }
+    .bg-yellow-300\/20 { background: rgba(253,224,71,0.2); }
+    .bg-emerald-300\/10 { background: rgba(110,231,183,0.1); }
+    .border-emerald-300 { border-color: #6ee7b7; }
+    .border-yellow-300 { border-color: #fde047; }
+    .border-white\/10 { border-color: rgba(255,255,255,0.1); }
+    .transition { transition: all 0.15s ease; }
+    .shrink-0 { flex-shrink: 0; }
+    .tracking-tight { letter-spacing: -0.025em; }
+    .h-px { height: 1px; }
+    .min-h-screen { min-height: 100vh; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-auto { overflow: auto; }
+    .sticky { position: sticky; }
+    .top-6 { top: 1.5rem; }
+    .self-start { align-self: flex-start; }
+    .object-cover { object-fit: cover; }
+    .object-contain { object-fit: contain; }
+    .z-10 { z-index: 10; }
+    .z-50 { z-index: 50; }
+    .fixed { position: fixed; }
+    .w-full { width: 100%; }
+    .border-collapse { border-collapse: collapse; }
+    .border-dashed { border-style: dashed; }
+    .main-grid { display: grid; gap: 1.25rem; }
+    @media (min-width: 1024px) {
+      .main-grid { grid-template-columns: minmax(0, 1.7fr) minmax(320px, 1fr); gap: 2rem; }
+    }
+    .product-grid { display: grid; gap: 0.75rem; }
+    @media (min-width: 640px) { .product-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1280px) { .product-grid { grid-template-columns: repeat(3, 1fr); } }
+    .gallery-grid { display: grid; gap: 0.75rem; }
+    @media (min-width: 640px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1280px) { .gallery-grid { grid-template-columns: repeat(3, 1fr); } }
+    .conditions-grid { display: grid; gap: 1rem; }
+    @media (min-width: 768px) { .conditions-grid { grid-template-columns: repeat(2, 1fr); } }
+    .customer-grid { display: grid; gap: 1rem; }
+    @media (min-width: 640px) { .customer-grid { grid-template-columns: repeat(2, 1fr); } }
+    .summary-grid { display: grid; gap: 0.75rem; }
+    @media (min-width: 640px) { .summary-grid { grid-template-columns: repeat(3, 1fr); } }
+    .action-header { display: flex; flex-direction: column; gap: 0.75rem; }
+    @media (min-width: 640px) { .action-header { flex-direction: row; align-items: center; } }
+    .table-actions { display: grid; gap: 0.75rem; }
+    @media (min-width: 640px) { .table-actions { display: flex; flex-wrap: wrap; align-items: center; } }
+    .table-header-row { display: flex; flex-direction: column; gap: 1rem; }
+    @media (min-width: 1280px) { .table-header-row { flex-direction: row; align-items: center; justify-content: space-between; } }
+    .header-flex { display: flex; flex-direction: column; gap: 1rem; }
+    @media (min-width: 640px) { .header-flex { flex-direction: row; align-items: center; justify-content: space-between; } }
+    .aside-summary-header { display: flex; flex-direction: column; gap: 0.75rem; }
+    @media (min-width: 640px) { .aside-summary-header { flex-direction: row; align-items: center; justify-content: space-between; } }
+    .gallery-toggle-row { display: flex; flex-direction: column; gap: 1rem; }
+    @media (min-width: 768px) { .gallery-toggle-row { flex-direction: row; align-items: center; justify-content: space-between; } }
+    .mobile-pieces { display: block; }
+    .desktop-table { display: none; }
+    @media (min-width: 768px) { .mobile-pieces { display: none; } .desktop-table { display: block; } }
+    .sm-text-4xl { font-size: 1.5rem; }
+    @media (min-width: 640px) { .sm-text-4xl { font-size: 2.25rem; } }
+    .sm-text-2xl { font-size: 1.25rem; }
+    @media (min-width: 640px) { .sm-text-2xl { font-size: 1.5rem; } }
+    .sm-text-3xl { font-size: 1.5rem; }
+    @media (min-width: 640px) { .sm-text-3xl { font-size: 1.875rem; } }
+    @media (min-width: 1280px) { .sm-text-3xl { font-size: 1.5rem; } }
+    @media (min-width: 1536px) { .sm-text-3xl { font-size: 1.875rem; } }
+    .qty-stepper { display: flex; align-items: center; overflow: hidden; border-radius: 1rem; border: 1px solid #e2e8f0; background: #f8fafc; }
+    .qty-stepper button { padding: 0.75rem 1rem; color: #334155; border: none; background: transparent; cursor: pointer; font-size: 1.1rem; }
+    .qty-stepper button:hover { background: #e2e8f0; }
+    .qty-stepper input { width: 5rem; background: transparent; border: none; padding: 0.75rem 0.5rem; text-align: center; font-weight: 900; outline: none; }
+    table { border-collapse: collapse; }
+    th { text-align: left; }
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type=number] { -moz-appearance: textfield; }
+    .bg-black\/70 { background: rgba(0,0,0,0.7); }
+    /* Conditions section always visible */
+    .conditions-always { margin-top: 1.5rem; }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-950">
+
+<section style="max-width:80rem;margin:0 auto;padding:1rem 0.75rem 2rem;">
+  <div class="main-grid">
+
+    <!-- MAIN -->
+    <main style="min-width:0;display:flex;flex-direction:column;gap:1.5rem;">
+
+      <!-- HEADER -->
+      <!-- SESSION BAR (visível só quando logado) -->
+      <div id="sessionBar" style="display:none;background:#0f172a;border:1px solid rgba(250,204,21,0.2);border-radius:1rem;padding:0.75rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:0.75rem;">
+          <span style="font-size:1.2rem;">👤</span>
+          <div>
+            <span style="font-size:0.8rem;color:#94a3b8;">Cliente logado:</span>
+            <span id="sessionClientName" style="font-weight:900;color:#fde047;margin-left:0.4rem;"></span>
+          </div>
+        </div>
+        <button onclick="goBackToSystem()" style="background:#facc15;color:#020617;font-weight:900;font-size:0.8rem;padding:0.5rem 1rem;border-radius:0.6rem;border:none;cursor:pointer;">← Voltar ao sistema</button>
+      </div>
+
+      <header class="rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 ring-1 ring-white\/10" style="padding:1.25rem;box-shadow:0 25px 50px -12px rgba(0,0,0,0.6);">
+        <div class="header-flex">
+          <div>
+            <p style="display:inline-flex;border-radius:9999px;background:rgba(250,204,21,0.1);padding:0.25rem 0.75rem;font-size:0.875rem;font-weight:800;color:#fde047;box-shadow:0 0 0 1px rgba(253,224,71,0.2);margin-bottom:0.5rem;">Tamara Sports</p>
+            <h1 class="sm-text-4xl" style="font-weight:900;letter-spacing:-0.025em;margin:0;">Monte seu uniforme Tamara Sports</h1>
+            <p style="margin-top:0.75rem;max-width:42rem;font-size:0.875rem;line-height:1.5;color:#cbd5e1;">
+              Informe os dados do cliente, escolha os itens, selecione o modelo e preencha nome, número e tamanho. O sistema gera o Excel e abre o WhatsApp automaticamente.
+            </p>
+          </div>
+          <div style="display:flex;height:3.5rem;width:3.5rem;align-items:center;justify-content:center;border-radius:1rem;background:#facc15;color:#020617;font-size:1.8rem;flex-shrink:0;">▣</div>
+        </div>
+      </header>
+
+      <!-- CUSTOMER -->
+      <section class="rounded-3xl" style="background:#fff;color:#020617;padding:1.25rem;box-shadow:0 25px 50px -12px rgba(0,0,0,0.4);">
+        <div style="margin-bottom:1.25rem;">
+          <h2 style="font-size:1.25rem;font-weight:900;margin:0 0 0.25rem;">Dados do cliente</h2>
+          <p style="font-size:0.875rem;color:#64748b;margin:0;">Essas informações aparecem no pedido final e no nome do arquivo Excel.</p>
+        </div>
+        <div class="customer-grid">
+          <label style="display:flex;flex-direction:column;gap:0.5rem;">
+            <span style="font-size:0.875rem;font-weight:700;">Nome do cliente</span>
+            <input id="customerName" type="text" placeholder="Ex: João Silva" oninput="onCustomerChange()"
+              style="width:100%;border-radius:1rem;border:1px solid #e2e8f0;background:#f8fafc;padding:0.75rem 1rem;outline:none;transition:all 0.15s;font-size:1rem;" />
+          </label>
+          <label style="display:flex;flex-direction:column;gap:0.5rem;">
+            <span style="font-size:0.875rem;font-weight:700;">Número de telefone</span>
+            <input id="customerPhone" type="tel" inputmode="tel" placeholder="Ex: 31999999999" oninput="onCustomerChange()"
+              style="width:100%;border-radius:1rem;border:1px solid #e2e8f0;background:#f8fafc;padding:0.75rem 1rem;outline:none;transition:all 0.15s;font-size:1rem;" />
+          </label>
+        </div>
+        <div style="margin-top:1rem;border-radius:1rem;background:#f8fafc;padding:1rem;font-size:0.875rem;color:#475569;box-shadow:0 0 0 1px #e2e8f0;">
+          <p style="margin:0;"><span style="font-weight:900;color:#020617;">Nome do arquivo:</span> <span id="previewFileName"></span></p>
+          <p style="margin:0.25rem 0 0;"><span style="font-weight:900;color:#020617;">Telefone no pedido:</span> <span id="previewPhone"></span></p>
+        </div>
+      </section>
+
+      <!-- PRODUCTS SECTION -->
+      <section class="rounded-3xl ring-1 ring-white\/10" style="background:#0f172a;padding:1.25rem;box-shadow:0 25px 50px -12px rgba(0,0,0,0.6);">
+        <div style="margin-bottom:1.25rem;display:flex;flex-direction:column;gap:0.75rem;">
+          <div style="display:flex;flex-direction:column;gap:0.5rem;">
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:0.75rem;flex-wrap:wrap;">
+              <div>
+                <p style="font-size:0.75rem;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:#94a3b8;margin:0 0 0.25rem;">Tabela de valores</p>
+                <h2 class="sm-text-2xl" style="font-weight:900;margin:0;">Tipos de pedido</h2>
+                <p style="font-size:0.875rem;color:#94a3b8;margin:0.25rem 0 0;">Clique em um produto para abrir a tabela de personalização.</p>
+              </div>
+              <div id="selectedCount" style="border-radius:1rem;background:rgba(255,255,255,0.1);padding:0.5rem 1rem;font-size:0.875rem;font-weight:900;color:#fde047;">0 tipo(s) escolhido(s)</div>
+            </div>
+          </div>
+        </div>
+        <div id="productGrid" class="product-grid"></div>
+        <!-- TABLE AREA -->
+        <div style="margin-top:1.25rem;border-radius:1.5rem;background:#fff;color:#020617;padding:0.75rem;box-shadow:0 20px 25px -5px rgba(0,0,0,0.3);">
+          <div id="tableArea">
+            <div id="emptyState" style="display:flex;min-height:11rem;flex-direction:column;align-items:center;justify-content:center;border-radius:1rem;border:1px dashed #cbd5e1;background:#f8fafc;padding:1.5rem;text-align:center;">
+              <div style="margin-bottom:0.75rem;display:flex;height:3rem;width:3rem;align-items:center;justify-content:center;border-radius:1rem;background:#020617;color:#fff;font-size:1.3rem;">▦</div>
+              <h3 style="font-size:1.1rem;font-weight:900;margin:0;">Selecione um tipo de pedido</h3>
+              <p style="margin:0.25rem 0 0;max-width:28rem;font-size:0.875rem;color:#64748b;">Ao clicar em um produto acima, a tabela fica pronta para preencher modelo, nome, número e tamanho.</p>
+            </div>
+            <div id="activeTable" style="display:none;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ACRÉSCIMOS E INFORMAÇÕES - SEMPRE VISÍVEL -->
+      <section class="rounded-3xl" style="background:#fff;color:#020617;padding:1.25rem;box-shadow:0 25px 50px -12px rgba(0,0,0,0.4);">
+        <h2 style="font-size:1.25rem;font-weight:900;margin:0 0 1rem;">Condições e Informações</h2>
+        <div class="conditions-grid">
+          <div style="border-radius:1rem;background:#fefce8;padding:1rem;box-shadow:0 0 0 1px #fef08a;">
+            <p style="margin:0 0 0.75rem;font-weight:900;color:#020617;">➕ Acréscimos e condições especiais</p>
+            <div style="display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;color:#334155;">
+              <p style="margin:0;">👕 Manga longa: acréscimo de R$5,00 por camisa</p>
+              <p style="margin:0;">🧵 Tecidos especiais: consultar vendedor</p>
+              <p style="margin:0;">🎯 Escudo em DTF: consultar vendedor</p>
+            </div>
+          </div>
+          <div style="border-radius:1rem;background:#f8fafc;padding:1rem;box-shadow:0 0 0 1px #e2e8f0;">
+            <p style="margin:0 0 0.75rem;font-weight:900;color:#020617;">ℹ️ Informações importantes</p>
+            <div style="display:flex;flex-direction:column;gap:0.5rem;font-size:0.875rem;color:#334155;">
+              <p style="margin:0;">🧶 Tecido Dryfit 100% poliéster, com proteção UV e ação antimicrobiana</p>
+              <p style="margin:0;">🕒 Prazo de fabricação: até 20 dias úteis</p>
+              <p style="margin:0;">📦 Pedido mínimo: 15 peças</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- GALLERY SECTION -->
+      <section class="rounded-3xl" style="background:#fff;color:#020617;padding:1.25rem;box-shadow:0 25px 50px -12px rgba(0,0,0,0.4);">
+        <div class="gallery-toggle-row">
+          <div>
+            <p style="font-size:0.75rem;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:#64748b;margin:0 0 0.25rem;">Produtos</p>
+            <h2 style="font-size:1.5rem;font-weight:900;margin:0;">🏆 Galeria Tamara Sports</h2>
+            <p style="margin:0.25rem 0 0;font-size:0.875rem;color:#64748b;">Área opcional para o cliente ver fotos dos produtos.</p>
+          </div>
+          <button onclick="toggleGallery()" id="galleryToggleBtn"
+            style="display:inline-flex;min-height:3rem;align-items:center;justify-content:center;border-radius:1rem;background:#020617;padding:0.75rem 1.25rem;font-size:0.875rem;font-weight:900;color:#fff;border:none;cursor:pointer;transition:all 0.15s;white-space:nowrap;"
+            onmouseover="this.style.background='#facc15';this.style.color='#020617';"
+            onmouseout="this.style.background='#020617';this.style.color='#fff';">
+            Abrir galeria
+          </button>
+        </div>
+        <div id="galleryClosed" style="margin-top:1.25rem;border-radius:1rem;border:1px dashed #cbd5e1;background:#f8fafc;padding:1.25rem;text-align:center;">
+          <p style="font-weight:900;color:#020617;margin:0;">Galeria recolhida</p>
+          <p style="margin:0.25rem 0 0;font-size:0.875rem;color:#64748b;">Clique em Abrir galeria para visualizar as fotos modelo dos produtos.</p>
+        </div>
+        <div id="galleryOpen" style="display:none;margin-top:1.25rem;">
+          <div id="galleryGrid" class="gallery-grid"></div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ASIDE -->
+    <aside style="min-width:0;" id="asideContainer">
+      <div class="rounded-3xl" style="background:#fff;color:#020617;padding:1.25rem;box-shadow:0 25px 50px -12px rgba(0,0,0,0.4);">
+        <div class="aside-summary-header" style="margin-bottom:1.25rem;">
+          <div>
+            <h2 style="font-size:1.25rem;font-weight:900;margin:0;">Resumo do pedido</h2>
+            <p style="font-size:0.875rem;color:#64748b;margin:0.25rem 0 0;">Total por item e por modelo.</p>
+          </div>
+          <div id="asidePieceCount" style="border-radius:1rem;background:#020617;padding:0.5rem 1rem;font-size:0.875rem;font-weight:900;color:#fff;">0 peça(s)</div>
+        </div>
+        <div id="asideProductList">
+          <div style="border-radius:1rem;border:1px dashed #cbd5e1;padding:1.25rem;text-align:center;font-size:0.875rem;color:#64748b;">
+            Nenhum produto selecionado ainda.
+          </div>
+        </div>
+        <div id="asideModelSummary" style="display:none;margin-top:1.25rem;border-radius:1rem;background:#f8fafc;padding:1rem;box-shadow:0 0 0 1px #e2e8f0;">
+          <p style="margin:0 0 0.75rem;font-size:0.875rem;font-weight:900;color:#020617;">Resumo por modelo</p>
+          <div id="asideModelList" style="display:flex;flex-direction:column;gap:0.5rem;"></div>
+        </div>
+        <div style="margin:1.25rem 0;height:1px;background:#e2e8f0;"></div>
+        <div id="minimumWarning" style="display:none;margin-bottom:1rem;border-radius:1rem;background:#fffbeb;padding:1rem;font-size:0.875rem;font-weight:700;color:#b45309;box-shadow:0 0 0 1px #fde68a;"></div>
+        <div style="display:flex;flex-direction:column;gap:0.75rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;border-radius:1rem;background:#f8fafc;padding:0.75rem 1rem;font-size:0.875rem;color:#475569;box-shadow:0 0 0 1px #e2e8f0;">
+            <span style="font-weight:700;">Total de peças</span>
+            <strong id="asideTotalPieces" style="color:#020617;">0</strong>
+          </div>
+          <div style="border-radius:1rem;background:#020617;padding:1rem;color:#fff;box-shadow:0 10px 15px -3px rgba(0,0,0,0.2);">
+            <p style="font-size:0.75rem;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:#cbd5e1;margin:0;">Valor total</p>
+            <p id="asideTotalValue" class="sm-text-3xl" style="font-weight:900;letter-spacing:-0.025em;text-align:right;margin:0.25rem 0 0;overflow-wrap:break-word;">R$&nbsp;0,00</p>
+          </div>
+        </div>
+        <div style="margin-top:1.25rem;border-radius:1rem;background:#f8fafc;padding:1rem;font-size:0.75rem;color:#475569;box-shadow:0 0 0 1px #e2e8f0;">
+          <p style="font-weight:900;color:#020617;margin:0;">Arquivo gerado:</p>
+          <p id="asideFileName" style="margin:0.25rem 0 0;word-break:break-all;"></p>
+        </div>
+        <div style="margin-top:1.5rem;display:flex;flex-direction:column;gap:0.75rem;">
+          <button id="btnPrepareExcel" onclick="handleDownloadExcel()"
+            style="display:inline-flex;min-height:3.5rem;width:100%;align-items:center;justify-content:center;gap:0.5rem;border-radius:1rem;background:#facc15;padding:0.75rem 1rem;font-size:0.875rem;font-weight:900;color:#020617;border:none;cursor:pointer;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);transition:all 0.15s;text-align:center;line-height:1.25;">
+            ▤ Preparar e Baixar Excel
+          </button>
+          <button id="btnWhatsapp" onclick="handleOpenWhatsapp()"
+            style="display:inline-flex;min-height:3rem;width:100%;align-items:center;justify-content:center;border-radius:1rem;background:#25d366;padding:0.75rem 1rem;font-size:0.875rem;font-weight:900;color:#fff;border:none;cursor:pointer;box-shadow:0 10px 15px -3px rgba(0,0,0,0.2);transition:all 0.15s;text-align:center;line-height:1.25;"
+            onmouseover="this.style.background='#128c7e';" onmouseout="this.style.background='#25d366';">
+            📲 Abrir WhatsApp
+          </button>
+          <button onclick="handleClearOrder()"
+            style="display:inline-flex;min-height:3rem;width:100%;align-items:center;justify-content:center;border-radius:1rem;background:#f1f5f9;padding:0.75rem 1rem;font-size:0.875rem;font-weight:900;color:#64748b;border:1px solid #e2e8f0;cursor:pointer;transition:all 0.15s;text-align:center;line-height:1.25;"
+            onmouseover="this.style.background='#fef2f2';this.style.color='#dc2626';this.style.borderColor='#fca5a5';" onmouseout="this.style.background='#f1f5f9';this.style.color='#64748b';this.style.borderColor='#e2e8f0';">
+            🗑️ Limpar pedido
+          </button>
+        </div>
+        <div id="downloadStatus" style="display:none;margin-top:0.75rem;border-radius:1rem;background:#ecfdf5;padding:0.75rem;text-align:center;font-size:0.75rem;font-weight:700;line-height:1.25rem;color:#047857;box-shadow:0 0 0 1px #a7f3d0;"></div>
+        <p style="margin-top:0.75rem;text-align:center;font-size:0.75rem;line-height:1.25rem;color:#94a3b8;">
+          Clique em Preparar Excel para baixar o arquivo. Depois abra o WhatsApp e anexe o arquivo manualmente.
+        </p>
+      </div>
+    </aside>
+
+  </div>
+</section>
+
+<!-- PRODUCT PHOTO MODAL -->
+<div id="photoModal" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;background:rgba(0,0,0,0.7);padding:0.75rem;">
+  <div style="max-height:92vh;width:100%;max-width:48rem;overflow:hidden;border-radius:1.5rem;background:#fff;color:#020617;box-shadow:0 25px 50px -12px rgba(0,0,0,0.8);">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;border-bottom:1px solid #e2e8f0;padding:1.25rem;">
+      <div>
+        <p style="font-size:0.75rem;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:#64748b;margin:0 0 0.25rem;">Foto do produto</p>
+        <h3 id="modalTitle" style="font-size:1.5rem;font-weight:900;margin:0;"></h3>
+        <p id="modalDesc" style="margin:0.25rem 0 0;font-size:0.875rem;color:#64748b;"></p>
+      </div>
+      <button onclick="closeModal()" style="display:flex;height:2.5rem;width:2.5rem;align-items:center;justify-content:center;border-radius:1rem;background:#f1f5f9;font-size:1.25rem;font-weight:900;color:#334155;border:none;cursor:pointer;transition:all 0.15s;"
+        onmouseover="this.style.background='#fef2f2';this.style.color='#dc2626';" onmouseout="this.style.background='#f1f5f9';this.style.color='#334155';">×</button>
+    </div>
+    <div style="max-height:calc(92vh - 110px);overflow:auto;padding:1.25rem;">
+      <div style="overflow:hidden;border-radius:1rem;border:1px solid #e2e8f0;background:#f8fafc;">
+        <img id="modalImg" src="" alt="" style="height:auto;width:100%;object-fit:contain;" />
+      </div>
+      <p style="margin-top:1rem;border-radius:1rem;background:#fefce8;padding:1rem;font-size:0.875rem;font-weight:700;line-height:1.5;color:#334155;box-shadow:0 0 0 1px #fef08a;">
+        Imagem modelo. Substitua pelo arquivo real do produto quando disponível.
+      </p>
+      <button onclick="closeModal()" style="margin-top:1.25rem;width:100%;border-radius:1rem;background:#020617;padding:1rem;font-weight:900;color:#fff;border:none;cursor:pointer;transition:all 0.15s;"
+        onmouseover="this.style.background='#facc15';this.style.color='#020617';" onmouseout="this.style.background='#020617';this.style.color='#fff';">
+        Fechar
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const WHATSAPP_NUMBER = "553172182237"; // ← ALTERE AQUI para o número real da Tamara Sports (com código do país)
+
+const PRODUCTS = [
+  { id: "kit_completo",      name: "Kit Completo",        price: 80,  description: "Camisa + Calção + Meião Profissional Kanxa", icon: "🏅", isInfantil: false },
+  { id: "kit_camisa_calcao", name: "Kit Camisa + Calção", price: 70,  description: "Camisa + Calção", icon: "⚽", isInfantil: false },
+  { id: "kit_passeio",       name: "Kit Passeio",         price: 75,  description: "Camisa + Calção com bolso", icon: "👔", isInfantil: false },
+  { id: "kit_passeio_polo",  name: "Kit Passeio Polo",    price: 80,  description: "Camisa gola polo + Calção com bolso — apenas adulto", icon: "👕", isInfantil: false },
+  { id: "colete_dupla_face", name: "Colete Dupla Face",   price: 60,  description: "Colete dupla face personalizado", icon: "🦺", isInfantil: false },
+  { id: "camisa_tradicional",name: "Camisa Tradicional",  price: 45,  description: "Camisa tradicional personalizada", icon: "👕", isInfantil: false },
+  { id: "camisa_babylook",   name: "Camisa Babylook",     price: 40,  description: "Camisa babylook personalizada", icon: "👚", isInfantil: false },
+  { id: "camisa_infantil",   name: "Camisa Infantil",     price: 35,  description: "Camisa infantil personalizada por idade", icon: "🧒", isInfantil: true },
+  { id: "regata",            name: "Regata",              price: 35,  description: "Regata personalizada", icon: "🏀", isInfantil: false },
+];
+
+const MODELS         = ["Camisa Linha","Camisa Goleiro","Comissão Técnica","Torcida Organizada","Treino","Passeio","Outro"];
+const MODELS_INFANTIL = ["Camisa Linha","Camisa Goleiro","Comissão Técnica","Torcida Organizada","Treino","Passeio","Infantil","Outro"];
+const SIZES_ADULTO  = ["PP","P","M","G","GG","XG","XXG"];
+const SIZES_INFANTIL = ["2 anos","4 anos","6 anos","8 anos","10 anos","12 anos","14 anos"];
+
+const DEFAULT_AREA_CODE = "31";
+const MINIMUM_ORDER_QUANTITY = 15;
+
+const EXTRA_CONDITIONS = [
+  "👕 Manga longa: acréscimo de R$5,00 por camisa",
+  "🧵 Tecidos especiais: consultar vendedor",
+  "🎯 Escudo em DTF: consultar vendedor",
+];
+const IMPORTANT_INFO = [
+  "🧶 Tecido Dryfit 100% poliéster, com proteção UV e ação antimicrobiana",
+  "🕒 Prazo de fabricação: até 20 dias úteis",
+  "📦 Pedido mínimo: 15 peças",
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let customer       = { name: "", phone: "" };
+let orders         = {};
+let activeProductId = null;
+let lastWhatsappText = "";
+let isGalleryOpen  = false;
+let excelReady     = false;
+
+// ============================================================
+// UTILS
+// ============================================================
+function money(value) {
+  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value || 0);
+}
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+function normalizeFilePart(value, fallback = "CLIENTE") {
+  const cleaned = String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-+|-+$/g, "").toUpperCase();
+  return cleaned || fallback;
+}
+function getPhoneLastFour(phone) {
+  const digits = String(phone || "").replace(/[^0-9]/g, "");
+  return digits.slice(-4) || "0000";
+}
+function formatPhone(value) {
+  const digitsOnly = String(value || "").replace(/[^0-9]/g, "").slice(0, 11);
+  if (!digitsOnly) return "";
+  const digits = digitsOnly.length <= 9 ? `${DEFAULT_AREA_CODE}${digitsOnly}` : digitsOnly;
+  const areaCode = digits.slice(0, 2);
+  const phoneNumber = digits.slice(2, 11);
+  const firstDigit = phoneNumber.slice(0, 1);
+  const firstBlock = phoneNumber.slice(1, 5);
+  const secondBlock = phoneNumber.slice(5, 9);
+  let formatted = `(${areaCode})`;
+  if (firstDigit) formatted += ` ${firstDigit}`;
+  if (firstBlock) formatted += `.${firstBlock}`;
+  if (secondBlock) formatted += `-${secondBlock}`;
+  return formatted;
+}
+function getDisplayPhone(value) {
+  const rawValue = String(value || "");
+  const digits = rawValue.replace(/[^0-9]/g, "");
+  if (digits.length === 9 || digits.length === 11) return formatPhone(rawValue);
+  return rawValue || "Não informado";
+}
+function getTodayFileDate(date = new Date()) {
+  const day   = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year  = date.getFullYear();
+  return `${day}-${month}-${year}`;
+}
+function buildExcelFileName(cust, date = new Date()) {
+  const customerName = normalizeFilePart(cust.name, "CLIENTE");
+  const lastFour     = getPhoneLastFour(cust.phone);
+  const currentDate  = getTodayFileDate(date);
+  return `${customerName}-${lastFour}-${currentDate}.xlsx`;
+}
+function createId() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") return crypto.randomUUID();
+  return `piece_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+}
+function getSizesForProduct(productId) {
+  const product = PRODUCTS.find(p => p.id === productId);
+  return (product && product.isInfantil) ? SIZES_INFANTIL : SIZES_ADULTO;
+}
+function createEmptyPiece(index = 1, productId = null) {
+  const sizes = getSizesForProduct(productId);
+  const defaultSize = sizes[Math.floor(sizes.length / 2)]; // tamanho do meio como padrão
+  return { id: createId(), model: MODELS[0], playerName: "", shirtNumber: "", size: defaultSize, label: `Peça ${index}` };
+}
+function createOrder(quantity = 1, productId = null) {
+  return { quantity, pieces: Array.from({ length: quantity }, (_, i) => createEmptyPiece(i + 1, productId)) };
+}
+function resizePieces(pieces, nextQuantity, productId = null) {
+  const safeQuantity = Math.max(1, Number(nextQuantity) || 1);
+  let nextPieces = [...pieces];
+  if (safeQuantity > nextPieces.length) {
+    for (let i = nextPieces.length; i < safeQuantity; i++) nextPieces.push(createEmptyPiece(i + 1, productId));
+  }
+  if (safeQuantity < nextPieces.length) nextPieces = nextPieces.slice(0, safeQuantity);
+  return { quantity: safeQuantity, pieces: nextPieces };
+}
+function calculateOrderSummary() {
+  const selectedProducts = PRODUCTS.filter(p => orders[p.id]);
+  const totalPieces  = selectedProducts.reduce((s, p) => s + orders[p.id].quantity, 0);
+  const totalValue   = selectedProducts.reduce((s, p) => s + orders[p.id].quantity * p.price, 0);
+  const minimumMissing = Math.max(0, MINIMUM_ORDER_QUANTITY - totalPieces);
+  return { selectedProducts, totalPieces, totalValue, minimumMissing };
+}
+function calculateModelSummary() {
+  const totals = {};
+  PRODUCTS.forEach(product => {
+    const order = orders[product.id];
+    if (!order) return;
+    order.pieces.forEach(piece => {
+      const model = piece.model || "Sem modelo";
+      const key   = `${product.name} | ${model}`;
+      if (!totals[key]) totals[key] = { type: product.name, model, quantity: 0, unitPrice: product.price, subtotal: 0 };
+      totals[key].quantity += 1;
+      totals[key].subtotal += product.price;
+    });
+  });
+  return Object.values(totals);
+}
+function createProductPhoto(product) {
+  const name  = escapeHtml(product?.name || "Produto");
+  const desc  = escapeHtml(product?.description || "Tamara Sports");
+  const icon  = escapeHtml(product?.icon || "🏆");
+  const svg   = `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="680" viewBox="0 0 1000 680"><defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#020617"/><stop offset="100%" stop-color="#1e293b"/></linearGradient></defs><rect width="1000" height="680" fill="url(#bg)"/><rect x="54" y="54" width="892" height="572" rx="42" fill="#ffffff"/><rect x="92" y="92" width="816" height="92" rx="26" fill="#facc15"/><text x="500" y="150" font-family="Arial" font-size="38" font-weight="900" text-anchor="middle" fill="#0f172a">${icon} ${name}</text><path d="M388 232 C410 192 590 192 612 232 L720 292 L664 392 L604 360 L604 540 L396 540 L396 360 L336 392 L280 292 Z" fill="#e2e8f0" stroke="#0f172a" stroke-width="8"/><circle cx="500" cy="386" r="70" fill="#facc15" opacity="0.95"/><text x="500" y="414" font-family="Arial" font-size="54" font-weight="900" text-anchor="middle" fill="#0f172a">TS</text><text x="500" y="596" font-family="Arial" font-size="25" font-weight="700" text-anchor="middle" fill="#334155">${desc}</text><text x="500" y="632" font-family="Arial" font-size="20" font-weight="700" text-anchor="middle" fill="#64748b">Imagem modelo — substituir pela foto real</text></svg>`;
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
+function goBackToSystem() {
+  try {
+    const client = JSON.parse(localStorage.getItem("ts_active_client") || "null");
+    const returnTo = client?.returnTo || "sistema.html";
+    window.location.href = returnTo;
+  } catch(e) {
+    window.location.href = "sistema.html";
+  }
+}
+
+// ============================================================
+// INTEGRAÇÃO COM SISTEMA DE CADASTRO
+// ============================================================
+function saveOrderToRegistry(summary) {
+  try {
+    const client = JSON.parse(localStorage.getItem("ts_active_client") || "null");
+    if (!client) return;
+    const orderData = {
+      totalPieces: summary.totalPieces,
+      totalValue:  summary.totalValue,
+      products: summary.selectedProducts.map(p => ({
+        name:     p.name,
+        quantity: orders[p.id].quantity,
+        subtotal: orders[p.id].quantity * p.price,
+        pieces:   orders[p.id].pieces.map(pc => ({
+          playerName:  pc.playerName,
+          shirtNumber: pc.shirtNumber,
+          size:        pc.size,
+          model:       pc.model,
+        }))
+      }))
+    };
+    localStorage.setItem("ts_pending_order", JSON.stringify(orderData));
+  } catch(e) {}
+}
+
+// ============================================================
+// EXCEL COM SHEETJS (arquivo .xlsx real)
+// ============================================================
+function handleDownloadExcel() {
+  const summary      = calculateOrderSummary();
+  const modelSummary = calculateModelSummary();
+  const fileName     = buildExcelFileName(customer);
+
+  if (summary.selectedProducts.length === 0) {
+    alert("Adicione pelo menos um produto antes de gerar o Excel.");
+    return;
+  }
+
+  const wb = XLSX.utils.book_new();
+
+  // ── ABA 1: Resumo ──────────────────────────────────────────
+  const resumoData = [
+    ["PEDIDO DE UNIFORME — TAMARA SPORTS"],
+    [],
+    ["Cliente",  customer.name || "Não informado"],
+    ["Telefone", getDisplayPhone(customer.phone)],
+    ["Data",     getTodayFileDate()],
+    [],
+    ["ACRÉSCIMOS E CONDIÇÕES ESPECIAIS"],
+    ...EXTRA_CONDITIONS.map(i => [i]),
+    [],
+    ["INFORMAÇÕES IMPORTANTES"],
+    ...IMPORTANT_INFO.map(i => [i]),
+    [],
+    ["RESUMO POR TIPO DE PEDIDO"],
+    ["Tipo", "Quantidade", "Valor unitário", "Subtotal"],
+    ...summary.selectedProducts.map(p => [
+      p.name,
+      orders[p.id].quantity,
+      p.price,
+      orders[p.id].quantity * p.price,
+    ]),
+    ["TOTAL", summary.totalPieces, "", summary.totalValue],
+    [],
+    ["RESUMO POR MODELO"],
+    ["Tipo", "Modelo", "Quantidade", "Valor unitário", "Subtotal"],
+    ...modelSummary.map(item => [item.type, item.model, item.quantity, item.unitPrice, item.subtotal]),
+  ];
+  const wsResumo = XLSX.utils.aoa_to_sheet(resumoData);
+  // formatos de moeda
+  const moedaFmt = 'R$#,##0.00';
+  wsResumo['!cols'] = [{wch:30},{wch:14},{wch:16},{wch:16}];
+  XLSX.utils.book_append_sheet(wb, wsResumo, "Resumo");
+
+  // ── ABA 2: Peças ───────────────────────────────────────────
+  const pecasHeader = ["Produto","Peça #","Modelo","Nome","Número","Tamanho","Valor unitário","Valor da peça"];
+  const pecasRows   = [];
+  summary.selectedProducts.forEach(product => {
+    const order = orders[product.id];
+    order.pieces.forEach((piece, idx) => {
+      pecasRows.push([
+        product.name,
+        idx + 1,
+        piece.model || "-",
+        piece.playerName || "-",
+        piece.shirtNumber || "-",
+        piece.size,
+        product.price,
+        product.price,
+      ]);
+    });
+  });
+  const wsPecas = XLSX.utils.aoa_to_sheet([pecasHeader, ...pecasRows]);
+  wsPecas['!cols'] = [{wch:22},{wch:8},{wch:22},{wch:20},{wch:10},{wch:12},{wch:16},{wch:16}];
+  XLSX.utils.book_append_sheet(wb, wsPecas, "Peças");
+
+  // Download
+  XLSX.writeFile(wb, fileName);
+
+  // Salva pedido no sistema de cadastro
+  saveOrderToRegistry(summary);
+
+  // Prepara mensagem WhatsApp
+  lastWhatsappText = encodeURIComponent(buildOrderMessage(fileName, summary, modelSummary));
+
+  const statusEl = document.getElementById("downloadStatus");
+  statusEl.style.display = "block";
+  statusEl.textContent = `✅ Excel baixado: ${fileName}`;
+  excelReady = true;
+}
+
+function buildOrderMessage(fileName, summary, modelSummary) {
+  const lines = [];
+  lines.push("*NOVO PEDIDO DE UNIFORME — TAMARA SPORTS*");
+  lines.push(`Cliente: ${customer.name || "Não informado"}`);
+  lines.push(`Telefone: ${getDisplayPhone(customer.phone)}`);
+  lines.push(`Arquivo: ${fileName}`);
+  lines.push("");
+  lines.push(`Total de peças: *${summary.totalPieces}*`);
+  lines.push(`Valor total: *${money(summary.totalValue)}*`);
+  lines.push("");
+  lines.push("Resumo por modelo:");
+  modelSummary.forEach(item => lines.push(`  - ${item.type} / ${item.model}: ${item.quantity} peça(s)`));
+  lines.push("");
+  lines.push("_Por favor, anexe o arquivo Excel baixado nesta conversa._");
+  return lines.join("\n");
+}
+
+function handleOpenWhatsapp() {
+  if (!lastWhatsappText) {
+    const summary      = calculateOrderSummary();
+    const modelSummary = calculateModelSummary();
+    const fileName     = buildExcelFileName(customer);
+    lastWhatsappText   = encodeURIComponent(buildOrderMessage(fileName, summary, modelSummary));
+  }
+  // Abre WhatsApp com número fixo da Tamara Sports
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${lastWhatsappText}`, "_blank", "noopener,noreferrer");
+}
+
+// ============================================================
+// RENDER FUNCTIONS
+// ============================================================
+function renderAll() {
+  renderCustomerPreview();
+  renderProductGrid();
+  renderActiveTable();
+  renderAside();
+}
+
+function onCustomerChange() {
+  customer.name  = document.getElementById("customerName").value;
+  customer.phone = document.getElementById("customerPhone").value.slice(0, 25);
+  renderCustomerPreview();
+  renderAside();
+}
+
+function renderCustomerPreview() {
+  document.getElementById("previewFileName").textContent = buildExcelFileName(customer);
+  document.getElementById("previewPhone").textContent    = getDisplayPhone(customer.phone);
+  document.getElementById("asideFileName").textContent   = buildExcelFileName(customer);
+}
+
+function renderProductGrid() {
+  const grid    = document.getElementById("productGrid");
+  const summary = calculateOrderSummary();
+  document.getElementById("selectedCount").textContent = `${summary.selectedProducts.length} tipo(s) escolhido(s)`;
+
+  grid.innerHTML = PRODUCTS.map(product => {
+    const order      = orders[product.id];
+    const isSelected = Boolean(order);
+    const isActive   = activeProductId === product.id;
+    let btnStyle, badgeStyle;
+    if (isActive) {
+      btnStyle   = "border:1px solid #fde047;background:#fde047;color:#020617;box-shadow:0 10px 15px -3px rgba(253,224,71,0.1);";
+      badgeStyle = "background:#020617;color:#fff;";
+    } else if (isSelected) {
+      btnStyle   = "border:1px solid #6ee7b7;background:rgba(110,231,183,0.1);color:#fff;";
+      badgeStyle = "background:#6ee7b7;color:#020617;";
+    } else {
+      btnStyle   = "border:1px solid rgba(255,255,255,0.1);background:#020617;color:#fff;";
+      badgeStyle = "background:rgba(255,255,255,0.1);color:#cbd5e1;";
+    }
+    const descColor = isActive ? "#334155" : "#94a3b8";
+    const badge = isSelected ? `${order.quantity}x` : "+";
+    return `<button type="button" onclick="selectProduct('${product.id}')"
+      style="border-radius:1rem;padding:0.75rem;text-align:left;cursor:pointer;transition:all 0.15s;${btnStyle}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:0.75rem;">
+        <div>
+          <h3 style="font-weight:900;line-height:1.25;margin:0;">${product.icon} ${product.name}</h3>
+          <p style="margin:0.25rem 0 0;font-size:0.75rem;color:${descColor};">${product.description}</p>
+          ${product.isInfantil ? `<p style="margin:0.15rem 0 0;font-size:0.7rem;color:#f59e0b;font-weight:700;">Tamanho por idade: 2,4,6,8,10,12,14</p>` : ""}
+        </div>
+        <span style="border-radius:9999px;padding:0.25rem 0.5rem;font-size:0.75rem;font-weight:900;flex-shrink:0;${badgeStyle}">${badge}</span>
+      </div>
+    </button>`;
+  }).join("");
+}
+
+function renderActiveTable() {
+  const emptyState  = document.getElementById("emptyState");
+  const activeTable = document.getElementById("activeTable");
+  if (!activeProductId || !orders[activeProductId]) {
+    emptyState.style.display  = "flex";
+    activeTable.style.display = "none";
+    return;
+  }
+  emptyState.style.display  = "none";
+  activeTable.style.display = "block";
+
+  const product  = PRODUCTS.find(p => p.id === activeProductId);
+  const order    = orders[activeProductId];
+  const subtotal = money(order.quantity * product.price);
+  const SIZES    = getSizesForProduct(product.id);
+
+  // Desktop table rows
+  const productModels = product.isInfantil ? MODELS_INFANTIL : MODELS;
+  const desktopRows = order.pieces.map((piece, index) => {
+    const modelOpts = productModels.map(m => `<option value="${m}" ${piece.model === m ? "selected" : ""}>${m}</option>`).join("");
+    const sizeOpts  = SIZES.map(s  => `<option value="${s}"  ${piece.size  === s ? "selected" : ""}>${s}</option>`).join("");
+    return `<tr style="${index%2===0?"background:#fff;":"background:#f8fafc;"}">
+      <td style="border-right:1px solid #e2e8f0;border-top:1px solid #e2e8f0;padding:0.4rem 0.5rem;font-weight:900;color:#64748b;font-size:0.8rem;">${index+1}</td>
+      <td style="border-right:1px solid #e2e8f0;border-top:1px solid #e2e8f0;padding:0;overflow:hidden;">
+        <select onchange="updatePiece('${product.id}','${piece.id}','model',this.value)"
+          style="height:2.75rem;width:100%;background:transparent;border:none;padding:0 0.4rem;outline:none;font-size:0.78rem;cursor:pointer;"
+          onfocus="this.style.background='#fefce8';" onblur="this.style.background='transparent';">${modelOpts}</select>
+      </td>
+      <td style="border-right:1px solid #e2e8f0;border-top:1px solid #e2e8f0;padding:0;overflow:hidden;">
+        <input value="${escapeHtml(piece.playerName)}" placeholder="Nome"
+          oninput="updatePiece('${product.id}','${piece.id}','playerName',this.value)"
+          style="height:2.75rem;width:100%;background:transparent;border:none;padding:0 0.4rem;outline:none;font-size:0.8rem;"
+          onfocus="this.style.background='#fefce8';" onblur="this.style.background='transparent';" />
+      </td>
+      <td style="border-right:1px solid #e2e8f0;border-top:1px solid #e2e8f0;padding:0;overflow:hidden;">
+        <input value="${escapeHtml(piece.shirtNumber)}" placeholder="10"
+          oninput="updatePiece('${product.id}','${piece.id}','shirtNumber',this.value)"
+          style="height:2.75rem;width:100%;background:transparent;border:none;padding:0 0.4rem;outline:none;font-size:0.8rem;"
+          onfocus="this.style.background='#fefce8';" onblur="this.style.background='transparent';" />
+      </td>
+      <td style="border-top:1px solid #e2e8f0;padding:0;overflow:hidden;">
+        <select onchange="updatePiece('${product.id}','${piece.id}','size',this.value)"
+          style="height:2.75rem;width:100%;background:transparent;border:none;padding:0 0.4rem;outline:none;font-size:0.78rem;cursor:pointer;"
+          onfocus="this.style.background='#fefce8';" onblur="this.style.background='transparent';">${sizeOpts}</select>
+      </td>
+    </tr>`;
+  }).join("");
+
+  // Mobile cards
+  const mobileCards = order.pieces.map((piece, index) => {
+    const modelOpts = productModels.map(m => `<option value="${m}" ${piece.model === m ? "selected" : ""}>${m}</option>`).join("");
+    const sizeOpts  = SIZES.map(s  => `<option value="${s}"  ${piece.size  === s ? "selected" : ""}>${s}</option>`).join("");
+    const sizeLabel = product.isInfantil ? "Idade" : "Tamanho";
+    return `<div style="border-radius:1rem;border:1px solid #e2e8f0;background:#f8fafc;padding:0.75rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:0.75rem;margin-bottom:0.75rem;">
+        <p style="font-weight:700;color:#020617;margin:0;">Peça ${index+1}</p>
+        <span style="border-radius:9999px;background:#fff;padding:0.25rem 0.75rem;font-size:0.75rem;font-weight:900;color:#334155;box-shadow:0 0 0 1px #e2e8f0;">${piece.size}</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:0.75rem;">
+        <label style="display:flex;flex-direction:column;gap:0.25rem;">
+          <span style="font-size:0.75rem;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:#64748b;">Modelo</span>
+          <select onchange="updatePiece('${product.id}','${piece.id}','model',this.value)"
+            style="height:3rem;width:100%;border-radius:0.75rem;border:1px solid #e2e8f0;background:#fff;padding:0 0.75rem;outline:none;font-size:0.875rem;">${modelOpts}</select>
+        </label>
+        <label style="display:flex;flex-direction:column;gap:0.25rem;">
+          <span style="font-size:0.75rem;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:#64748b;">Nome</span>
+          <input value="${escapeHtml(piece.playerName)}" placeholder="Digite o nome"
+            oninput="updatePiece('${product.id}','${piece.id}','playerName',this.value)"
+            style="height:3rem;width:100%;border-radius:0.75rem;border:1px solid #e2e8f0;background:#fff;padding:0 0.75rem;outline:none;font-size:0.875rem;" />
+        </label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+          <label style="display:flex;flex-direction:column;gap:0.25rem;">
+            <span style="font-size:0.75rem;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:#64748b;">Número</span>
+            <input value="${escapeHtml(piece.shirtNumber)}" placeholder="10"
+              oninput="updatePiece('${product.id}','${piece.id}','shirtNumber',this.value)"
+              style="height:3rem;width:100%;border-radius:0.75rem;border:1px solid #e2e8f0;background:#fff;padding:0 0.75rem;outline:none;font-size:0.875rem;" />
+          </label>
+          <label style="display:flex;flex-direction:column;gap:0.25rem;">
+            <span style="font-size:0.75rem;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:#64748b;">${sizeLabel}</span>
+            <select onchange="updatePiece('${product.id}','${piece.id}','size',this.value)"
+              style="height:3rem;width:100%;border-radius:0.75rem;border:1px solid #e2e8f0;background:#fff;padding:0 0.75rem;outline:none;font-size:0.875rem;">${sizeOpts}</select>
+          </label>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+
+  const sizeColLabel = product.isInfantil ? "Idade" : "Tamanho";
+
+  activeTable.innerHTML = `
+    <div>
+      <div class="table-header-row" style="margin-bottom:1rem;">
+        <div>
+          <p style="font-size:0.75rem;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:#64748b;margin:0 0 0.25rem;">Tabela de personalização</p>
+          <h3 class="sm-text-2xl" style="font-weight:900;margin:0;">${product.name}</h3>
+          <p style="font-size:0.875rem;color:#64748b;margin:0.25rem 0 0;">Preencha uma linha para cada peça: modelo, nome, número e ${sizeColLabel.toLowerCase()}.</p>
+        </div>
+        <div class="table-actions">
+          <div class="qty-stepper">
+            <button type="button" aria-label="Diminuir" onclick="updateQuantity('${product.id}',${order.quantity-1})">−</button>
+            <input type="number" min="1" value="${order.quantity}" onchange="updateQuantity('${product.id}',this.value)" />
+            <button type="button" aria-label="Aumentar" onclick="updateQuantity('${product.id}',${order.quantity+1})">+</button>
+          </div>
+          <button type="button" onclick="setActiveProduct(null)"
+            style="min-height:3rem;border-radius:1rem;background:#f1f5f9;padding:0.75rem 1rem;font-size:0.875rem;font-weight:900;color:#334155;border:none;cursor:pointer;transition:all 0.15s;"
+            onmouseover="this.style.background='#e2e8f0';" onmouseout="this.style.background='#f1f5f9';">Minimizar</button>
+          <button type="button" onclick="removeProduct('${product.id}')"
+            style="display:inline-flex;min-height:3rem;align-items:center;justify-content:center;gap:0.5rem;border-radius:1rem;background:#fef2f2;padding:0.75rem 1rem;font-size:0.875rem;font-weight:900;color:#dc2626;border:none;cursor:pointer;transition:all 0.15s;"
+            onmouseover="this.style.background='#fee2e2';" onmouseout="this.style.background='#fef2f2';">× Remover</button>
+        </div>
+      </div>
+      <!-- Mobile -->
+      <div class="mobile-pieces">
+        <div style="max-height:520px;overflow:auto;display:flex;flex-direction:column;gap:0.75rem;padding-right:0.25rem;">${mobileCards}</div>
+      </div>
+      <!-- Desktop -->
+      <div class="desktop-table" style="overflow:hidden;border-radius:1rem;border:1px solid #e2e8f0;">
+        <div style="max-height:420px;overflow-y:auto;overflow-x:hidden;">
+          <table style="width:100%;table-layout:fixed;border-collapse:collapse;font-size:0.8rem;">
+            <colgroup>
+              <col style="width:2.5rem;">
+              <col style="width:22%;">
+              <col style="width:auto;">
+              <col style="width:5rem;">
+              <col style="width:7rem;">
+            </colgroup>
+            <thead style="position:sticky;top:0;z-index:10;background:#020617;color:#fff;">
+              <tr>
+                <th style="border-right:1px solid rgba(255,255,255,0.1);padding:0.6rem 0.5rem;font-weight:900;text-align:left;">#</th>
+                <th style="border-right:1px solid rgba(255,255,255,0.1);padding:0.6rem 0.5rem;font-weight:900;text-align:left;">Modelo</th>
+                <th style="border-right:1px solid rgba(255,255,255,0.1);padding:0.6rem 0.5rem;font-weight:900;text-align:left;">Nome</th>
+                <th style="border-right:1px solid rgba(255,255,255,0.1);padding:0.6rem 0.5rem;font-weight:900;text-align:left;">Nº</th>
+                <th style="padding:0.6rem 0.5rem;font-weight:900;text-align:left;">${sizeColLabel}</th>
+              </tr>
+            </thead>
+            <tbody>${desktopRows}</tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Summary row -->
+      <div class="summary-grid" style="margin-top:1rem;">
+        <div style="border-radius:1rem;background:#f8fafc;padding:1rem;box-shadow:0 0 0 1px #e2e8f0;">
+          <p style="font-size:0.75rem;font-weight:700;text-transform:uppercase;color:#64748b;margin:0 0 0.25rem;">Produto</p>
+          <p style="font-weight:900;margin:0;">${product.name}</p>
+        </div>
+        <div style="border-radius:1rem;background:#f8fafc;padding:1rem;box-shadow:0 0 0 1px #e2e8f0;">
+          <p style="font-size:0.75rem;font-weight:700;text-transform:uppercase;color:#64748b;margin:0 0 0.25rem;">Quantidade</p>
+          <p style="font-weight:900;margin:0;">${order.quantity} peça(s)</p>
+        </div>
+        <div style="border-radius:1rem;background:#f8fafc;padding:1rem;box-shadow:0 0 0 1px #e2e8f0;">
+          <p style="font-size:0.75rem;font-weight:700;text-transform:uppercase;color:#64748b;margin:0 0 0.25rem;">Subtotal</p>
+          <p style="font-weight:900;margin:0;">${subtotal}</p>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderAside() {
+  const summary      = calculateOrderSummary();
+  const modelSummary = calculateModelSummary();
+  document.getElementById("asidePieceCount").textContent  = `${summary.totalPieces} peça(s)`;
+  document.getElementById("asideTotalPieces").textContent = summary.totalPieces;
+  document.getElementById("asideTotalValue").textContent  = money(summary.totalValue);
+  document.getElementById("asideFileName").textContent    = buildExcelFileName(customer);
+
+  // Product list
+  const listEl = document.getElementById("asideProductList");
+  if (summary.selectedProducts.length === 0) {
+    listEl.innerHTML = `<div style="border-radius:1rem;border:1px dashed #cbd5e1;padding:1.25rem;text-align:center;font-size:0.875rem;color:#64748b;">Nenhum produto selecionado ainda.</div>`;
+  } else {
+    listEl.innerHTML = `<div style="display:flex;flex-direction:column;gap:0.75rem;">` +
+      summary.selectedProducts.map(product => {
+        const order    = orders[product.id];
+        const isActive = activeProductId === product.id;
+        const style    = isActive ? "background:#fefce8;box-shadow:0 0 0 1px #fde047;" : "background:#f8fafc;box-shadow:0 0 0 1px #e2e8f0;";
+        return `<button type="button" onclick="setActiveProduct('${product.id}')"
+          style="width:100%;border-radius:1rem;padding:1rem;text-align:left;border:none;cursor:pointer;transition:all 0.15s;${style}"
+          onmouseover="this.style.background='#f1f5f9';" onmouseout="this.style.background='${isActive?'#fefce8':'#f8fafc'}';">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:0.75rem;">
+            <div>
+              <p style="font-weight:900;margin:0;color:#020617;">${product.name}</p>
+              <p style="font-size:0.875rem;color:#64748b;margin:0.125rem 0 0;">${order.quantity} peça(s) × ${money(product.price)}</p>
+            </div>
+            <p style="font-weight:900;margin:0;flex-shrink:0;color:#020617;">${money(order.quantity * product.price)}</p>
+          </div>
+        </button>`;
+      }).join("") + `</div>`;
+  }
+
+  // Model summary
+  const modelEl     = document.getElementById("asideModelSummary");
+  const modelListEl = document.getElementById("asideModelList");
+  if (modelSummary.length > 0) {
+    modelEl.style.display = "block";
+    modelListEl.innerHTML = modelSummary.map(item => `
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:0.75rem;font-size:0.875rem;">
+        <div>
+          <p style="font-weight:700;color:#020617;margin:0;">${item.model}</p>
+          <p style="font-size:0.75rem;color:#64748b;margin:0;">${item.type}</p>
+        </div>
+        <span style="border-radius:9999px;background:#fff;padding:0.25rem 0.5rem;font-size:0.75rem;font-weight:900;color:#334155;box-shadow:0 0 0 1px #e2e8f0;flex-shrink:0;">${item.quantity}×</span>
+      </div>
+    `).join("");
+  } else {
+    modelEl.style.display = "none";
+  }
+
+  // Minimum warning
+  const warningEl = document.getElementById("minimumWarning");
+  if (summary.minimumMissing > 0 && summary.totalPieces > 0) {
+    warningEl.style.display = "block";
+    warningEl.textContent   = `⚠️ Pedido mínimo: ${MINIMUM_ORDER_QUANTITY} peças. Faltam ${summary.minimumMissing} peça(s).`;
+  } else {
+    warningEl.style.display = "none";
+  }
+
+  // Buttons state
+  const btnPrepare = document.getElementById("btnPrepareExcel");
+  const btnWa      = document.getElementById("btnWhatsapp");
+  btnPrepare.disabled = summary.selectedProducts.length === 0;
+  btnWa.disabled      = summary.selectedProducts.length === 0;
+}
+
+function renderGallery() {
+  const grid = document.getElementById("galleryGrid");
+  grid.innerHTML = PRODUCTS.map(product => {
+    const photo = createProductPhoto(product);
+    return `<button type="button" onclick="openProductPhoto('${product.id}')"
+      style="border-radius:1rem;background:#f8fafc;padding:1rem;text-align:left;box-shadow:0 0 0 1px #e2e8f0;transition:all 0.15s;border:none;cursor:pointer;"
+      onmouseover="this.style.transform='translateY(-2px)';this.style.background='#fefce8';this.style.boxShadow='0 0 0 1px #fde047';"
+      onmouseout="this.style.transform='';this.style.background='#f8fafc';this.style.boxShadow='0 0 0 1px #e2e8f0';">
+      <div style="margin-bottom:0.75rem;display:flex;height:7rem;align-items:center;justify-content:center;overflow:hidden;border-radius:1rem;background:#020617;">
+        <img src="${photo}" alt="Foto modelo de ${product.name}" style="height:100%;width:100%;object-fit:cover;opacity:0.95;" />
+      </div>
+      <p style="font-weight:900;color:#020617;margin:0;">${product.icon} ${product.name}</p>
+      <p style="margin:0.25rem 0 0;font-size:0.875rem;line-height:1.25rem;color:#64748b;">${product.description}</p>
+      <p style="margin:0.75rem 0 0;font-size:0.75rem;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:#a16207;">Ver foto</p>
+    </button>`;
+  }).join("");
+}
+
+// ============================================================
+// ACTIONS
+// ============================================================
+function selectProduct(productId) {
+  if (!orders[productId]) {
+    orders[productId] = createOrder(1, productId);
+  }
+  activeProductId = activeProductId === productId ? null : productId;
+  renderProductGrid();
+  renderActiveTable();
+  renderAside();
+}
+
+function setActiveProduct(productId) {
+  activeProductId = productId;
+  renderProductGrid();
+  renderActiveTable();
+  renderAside();
+}
+
+function handleClearOrder() {
+  if (!confirm("Tem certeza que deseja limpar todo o pedido? Todos os dados serão perdidos.")) return;
+  orders = {};
+  activeProductId = null;
+  excelReady = false;
+  lastWhatsappText = "";
+  customer = { name: "", phone: "" };
+  document.getElementById("customerName").value  = "";
+  document.getElementById("customerPhone").value = "";
+  onCustomerChange();
+  const status = document.getElementById("downloadStatus");
+  if (status) { status.style.display = "none"; status.textContent = ""; }
+  renderAll();
+}
+
+function removeProduct(productId) {
+  delete orders[productId];
+  if (activeProductId === productId) activeProductId = null;
+  renderProductGrid();
+  renderActiveTable();
+  renderAside();
+}
+
+function updateQuantity(productId, quantity) {
+  if (!orders[productId]) return;
+  const resized = resizePieces(orders[productId].pieces, quantity, productId);
+  orders[productId] = { ...orders[productId], quantity: resized.quantity, pieces: resized.pieces };
+  renderActiveTable();
+  renderAside();
+}
+
+function updatePiece(productId, pieceId, field, value) {
+  if (!orders[productId]) return;
+  orders[productId].pieces = orders[productId].pieces.map(p =>
+    p.id === pieceId ? { ...p, [field]: value } : p
+  );
+  if (field === "model") renderAside();
+}
+
+function toggleGallery() {
+  isGalleryOpen = !isGalleryOpen;
+  document.getElementById("galleryClosed").style.display  = isGalleryOpen ? "none" : "block";
+  document.getElementById("galleryOpen").style.display    = isGalleryOpen ? "block" : "none";
+  document.getElementById("galleryToggleBtn").textContent = isGalleryOpen ? "Fechar galeria" : "Abrir galeria";
+  if (isGalleryOpen) renderGallery();
+}
+
+function openProductPhoto(productId) {
+  const product = PRODUCTS.find(p => p.id === productId);
+  if (!product) return;
+  const photo = createProductPhoto(product);
+  document.getElementById("modalTitle").textContent = `${product.icon} ${product.name}`;
+  document.getElementById("modalDesc").textContent  = product.description;
+  document.getElementById("modalImg").src           = photo;
+  document.getElementById("modalImg").alt           = `Foto de ${product.name}`;
+  const modal = document.getElementById("photoModal");
+  modal.style.display = "flex";
+}
+
+function closeModal() {
+  document.getElementById("photoModal").style.display = "none";
+}
+
+// ============================================================
+// STICKY ASIDE ON DESKTOP
+// ============================================================
+function applySticky() {
+  const aside = document.getElementById("asideContainer");
+  if (window.innerWidth >= 1024) {
+    aside.style.position  = "sticky";
+    aside.style.top       = "1.5rem";
+    aside.style.alignSelf = "flex-start";
+  } else {
+    aside.style.position  = "";
+    aside.style.top       = "";
+    aside.style.alignSelf = "";
+  }
+}
+window.addEventListener("resize", applySticky);
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener("DOMContentLoaded", () => {
+  applySticky();
+  renderAll();
+
+  // Carrega cliente logado vindo do sistema
+  try {
+    const client = JSON.parse(localStorage.getItem("ts_active_client") || "null");
+    if (client && client.name) {
+      customer = { name: client.name, phone: client.phone };
+      document.getElementById("customerName").value  = client.name;
+      document.getElementById("customerPhone").value = client.phone;
+      onCustomerChange();
+      const bar = document.getElementById("sessionBar");
+      bar.style.display = "flex";
+      document.getElementById("sessionClientName").textContent = client.name;
+    }
+  } catch(e) {}
+});
+</script>
+</body>
+</html>

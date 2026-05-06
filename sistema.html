@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tamara Sports — Sistema de Clientes</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#020617;--bg2:#0f172a;--bg3:#1e293b;
+  --yellow:#facc15;--yellow2:#fde047;--yellow-dim:rgba(250,204,21,0.12);
+  --white:#fff;--muted:#94a3b8;--muted2:#64748b;--muted3:#475569;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --red:#ef4444;--red-dim:rgba(239,68,68,0.12);
+  --green:#22c55e;--green-dim:rgba(34,197,94,0.12);
+  --radius:1rem;--radius2:1.5rem;
+  --font:'Segoe UI',system-ui,sans-serif;
+}
+body{background:var(--bg);color:var(--white);font-family:var(--font);min-height:100vh}
+input,select,textarea{font-family:inherit;background:var(--bg3);border:1px solid var(--border2);color:var(--white);border-radius:0.75rem;padding:0.75rem 1rem;font-size:0.9rem;outline:none;transition:border 0.15s,background 0.15s;width:100%}
+input::placeholder,textarea::placeholder{color:var(--muted)}
+input:focus,select:focus,textarea:focus{border-color:var(--yellow);background:rgba(250,204,21,0.05)}
+select option{background:#1e293b;color:#fff}
+button{font-family:inherit;cursor:pointer;border:none;outline:none;transition:all 0.15s}
+a{color:var(--yellow);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* SCREENS */
+.screen{display:none;min-height:100vh}
+.screen.active{display:flex}
+
+/* ── AUTH SCREEN ── */
+#authScreen{align-items:center;justify-content:center;padding:1rem}
+.auth-card{width:100%;max-width:420px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);padding:2rem;box-shadow:0 40px 80px rgba(0,0,0,0.5)}
+.auth-logo{display:flex;align-items:center;gap:0.75rem;margin-bottom:2rem}
+.auth-logo-icon{width:44px;height:44px;background:var(--yellow);border-radius:0.75rem;display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:#020617}
+.auth-logo-text{font-size:1.1rem;font-weight:800;color:var(--white)}
+.auth-logo-sub{font-size:0.75rem;color:var(--muted);margin-top:1px}
+.auth-tabs{display:flex;gap:0.5rem;margin-bottom:1.5rem;background:var(--bg3);border-radius:0.75rem;padding:4px}
+.auth-tab{flex:1;padding:0.6rem;border-radius:0.6rem;font-size:0.85rem;font-weight:700;background:transparent;color:var(--muted);transition:all 0.15s}
+.auth-tab.active{background:var(--yellow);color:#020617}
+.field{display:flex;flex-direction:column;gap:0.4rem;margin-bottom:1rem}
+.field label{font-size:0.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em}
+.btn-primary{width:100%;padding:0.85rem;background:var(--yellow);color:#020617;font-weight:900;font-size:0.95rem;border-radius:0.75rem;margin-top:0.5rem}
+.btn-primary:hover{background:var(--yellow2)}
+.btn-primary:disabled{opacity:0.4;cursor:not-allowed}
+.auth-msg{font-size:0.82rem;padding:0.75rem;border-radius:0.75rem;margin-top:0.75rem;text-align:center;display:none}
+.auth-msg.error{background:var(--red-dim);color:#fca5a5;border:1px solid rgba(239,68,68,0.2);display:block}
+.auth-msg.success{background:var(--green-dim);color:#86efac;border:1px solid rgba(34,197,94,0.2);display:block}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
+
+/* ── APP SHELL ── */
+#appScreen{flex-direction:column}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 1.25rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.topbar-left{display:flex;align-items:center;gap:0.75rem}
+.topbar-logo{width:32px;height:32px;background:var(--yellow);border-radius:0.5rem;display:flex;align-items:center;justify-content:center;font-size:1rem;color:#020617}
+.topbar-title{font-weight:800;font-size:0.95rem}
+.topbar-right{display:flex;align-items:center;gap:0.75rem}
+.topbar-user{font-size:0.82rem;color:var(--muted)}
+.topbar-user span{color:var(--white);font-weight:700}
+.btn-sm{padding:0.45rem 0.9rem;border-radius:0.6rem;font-size:0.8rem;font-weight:700}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border2);color:var(--white)}
+.btn-yellow{background:var(--yellow);color:#020617}
+.btn-yellow:hover{background:var(--yellow2)}
+.btn-danger{background:var(--red-dim);color:#fca5a5;border:1px solid rgba(239,68,68,0.2)}
+.btn-danger:hover{background:rgba(239,68,68,0.2)}
+
+/* ── NAV TABS ── */
+.nav-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 1.25rem;display:flex;gap:0.25rem;overflow-x:auto}
+.nav-tab{padding:0.75rem 1rem;font-size:0.85rem;font-weight:700;color:var(--muted);background:transparent;border:none;border-bottom:2px solid transparent;white-space:nowrap;cursor:pointer;transition:all 0.15s}
+.nav-tab.active{color:var(--yellow);border-bottom-color:var(--yellow)}
+.nav-tab:hover:not(.active){color:var(--white)}
+
+/* ── MAIN CONTENT ── */
+.main-content{flex:1;padding:1.5rem;max-width:960px;margin:0 auto;width:100%}
+
+/* ── PANELS ── */
+.panel{display:none}
+.panel.active{display:block}
+
+/* ── CARDS ── */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem}
+.card-title{font-size:0.75rem;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:0.5rem}
+.card-value{font-size:1.6rem;font-weight:900;letter-spacing:-0.03em}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0.75rem;margin-bottom:1.5rem}
+.section-title{font-size:1.1rem;font-weight:900;margin-bottom:1rem}
+.section-sub{font-size:0.82rem;color:var(--muted);margin-top:0.2rem;margin-bottom:1rem}
+
+/* ── ORDERS TABLE ── */
+.orders-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:0.85rem}
+thead{background:var(--bg3)}
+th{padding:0.75rem 1rem;text-align:left;font-size:0.75rem;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);white-space:nowrap}
+td{padding:0.75rem 1rem;border-top:1px solid var(--border);vertical-align:middle}
+tr:hover td{background:rgba(255,255,255,0.02)}
+.badge{display:inline-flex;align-items:center;padding:0.25rem 0.6rem;border-radius:9999px;font-size:0.72rem;font-weight:800;white-space:nowrap}
+.badge-yellow{background:var(--yellow-dim);color:var(--yellow)}
+.badge-green{background:var(--green-dim);color:#86efac}
+.badge-red{background:var(--red-dim);color:#fca5a5}
+.badge-blue{background:rgba(59,130,246,0.12);color:#93c5fd}
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--muted)}
+.empty-icon{font-size:2.5rem;margin-bottom:0.75rem}
+.empty-text{font-size:0.9rem}
+
+/* ── PROFILE FORM ── */
+.profile-grid{display:grid;gap:1rem;grid-template-columns:1fr 1fr}
+@media(max-width:600px){.profile-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}}
+.btn-save{padding:0.75rem 2rem;background:var(--yellow);color:#020617;font-weight:900;border-radius:0.75rem;font-size:0.9rem}
+.btn-save:hover{background:var(--yellow2)}
+
+/* ── ADMIN CLIENTS TABLE ── */
+.search-bar{display:flex;gap:0.75rem;margin-bottom:1rem}
+.search-bar input{flex:1}
+.client-row td:first-child{font-weight:700}
+
+/* ── ORDER DETAIL MODAL (faux fixed) ── */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.75);align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius2);width:100%;max-width:600px;padding:1.5rem;margin:auto}
+.modal-header{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1.25rem}
+.modal-close{width:36px;height:36px;background:var(--bg3);border:1px solid var(--border);border-radius:0.6rem;font-size:1.2rem;color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s}
+.modal-close:hover{color:var(--red);border-color:rgba(239,68,68,0.3)}
+.order-items-list{display:flex;flex-direction:column;gap:0.5rem;max-height:300px;overflow-y:auto}
+.order-item-row{background:var(--bg3);border-radius:0.6rem;padding:0.6rem 0.75rem;font-size:0.82rem;display:flex;gap:0.5rem;align-items:center}
+.order-item-num{background:var(--bg);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:800;color:var(--muted);flex-shrink:0}
+
+/* ── NEW ORDER CTA ── */
+.cta-card{background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);border:1px solid var(--border2);border-radius:var(--radius2);padding:2rem;text-align:center;margin-bottom:1.5rem}
+.cta-title{font-size:1.4rem;font-weight:900;margin-bottom:0.5rem}
+.cta-sub{color:var(--muted);font-size:0.875rem;margin-bottom:1.25rem}
+.btn-cta{display:inline-flex;align-items:center;gap:0.5rem;padding:0.85rem 1.75rem;background:var(--yellow);color:#020617;font-weight:900;font-size:0.95rem;border-radius:0.75rem;border:none;cursor:pointer}
+.btn-cta:hover{background:var(--yellow2);transform:translateY(-1px)}
+
+/* admin badge */
+.admin-chip{background:rgba(168,85,247,0.15);color:#d8b4fe;border:1px solid rgba(168,85,247,0.25);padding:0.2rem 0.6rem;border-radius:9999px;font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.05em}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     AUTH SCREEN
+════════════════════════════════════════ -->
+<div id="authScreen" class="screen active">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">▣</div>
+      <div>
+        <div class="auth-logo-text">Tamara Sports</div>
+        <div class="auth-logo-sub">Sistema de Clientes</div>
+      </div>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">Entrar</button>
+      <button class="auth-tab" onclick="switchAuthTab('register')">Cadastrar</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="loginForm">
+      <div class="field">
+        <label>Telefone de acesso</label>
+        <input id="loginPhone" type="tel" placeholder="Ex: 31999999999" inputmode="numeric"/>
+      </div>
+      <div class="field">
+        <label>Senha</label>
+        <input id="loginPass" type="password" placeholder="Sua senha"/>
+      </div>
+      <button class="btn-primary" onclick="doLogin()">Entrar</button>
+      <div id="loginMsg" class="auth-msg"></div>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="registerForm" style="display:none">
+      <div class="form-grid">
+        <div class="field">
+          <label>Nome completo</label>
+          <input id="regName" type="text" placeholder="João Silva"/>
+        </div>
+        <div class="field">
+          <label>Telefone (WhatsApp)</label>
+          <input id="regPhone" type="tel" placeholder="31999999999" inputmode="numeric"/>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label>CEP</label>
+          <input id="regCep" type="text" placeholder="00000-000" maxlength="9" oninput="formatCep(this)" onblur="fetchCep(this.value)"/>
+        </div>
+        <div class="field">
+          <label>Número</label>
+          <input id="regNumero" type="text" placeholder="123"/>
+        </div>
+      </div>
+      <div class="field">
+        <label>Rua</label>
+        <input id="regRua" type="text" placeholder="Preenchido pelo CEP"/>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Bairro</label>
+          <input id="regBairro" type="text" placeholder=""/>
+        </div>
+        <div class="field">
+          <label>Cidade / UF</label>
+          <input id="regCidade" type="text" placeholder=""/>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Senha</label>
+          <input id="regPass" type="password" placeholder="Mínimo 6 caracteres"/>
+        </div>
+        <div class="field">
+          <label>Confirmar senha</label>
+          <input id="regPass2" type="password" placeholder="Repita a senha"/>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="doRegister()">Criar conta</button>
+      <div id="registerMsg" class="auth-msg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     APP SCREEN
+════════════════════════════════════════ -->
+<div id="appScreen" class="screen">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">▣</div>
+      <div class="topbar-title">Tamara Sports</div>
+      <div id="adminChip" class="admin-chip" style="display:none">Admin</div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-user">Olá, <span id="topbarName"></span></div>
+      <button class="btn-sm btn-ghost" onclick="doLogout()">Sair</button>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav-bar" id="navBar">
+    <button class="nav-tab active" data-panel="panelHome" onclick="showPanel('panelHome',this)">Início</button>
+    <button class="nav-tab" data-panel="panelPedidos" onclick="showPanel('panelPedidos',this)">Meus Pedidos</button>
+    <button class="nav-tab" data-panel="panelPerfil" onclick="showPanel('panelPerfil',this)">Meu Perfil</button>
+    <button class="nav-tab" id="adminTab" data-panel="panelAdmin" onclick="showPanel('panelAdmin',this)" style="display:none">
+      ⚙ Painel Admin
+    </button>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="main-content">
+
+    <!-- ── PANEL: HOME ── -->
+    <div id="panelHome" class="panel active">
+      <div class="cta-card">
+        <div class="cta-title">Monte seu uniforme</div>
+        <div class="cta-sub">Personalize sua camisa, número, nome e tamanho. O pedido fica salvo no seu histórico.</div>
+        <button class="btn-cta" onclick="openOrderForm()">▤ Fazer novo pedido</button>
+      </div>
+
+      <div class="stats-grid" id="homeStats"></div>
+
+      <div class="section-title">Últimos pedidos</div>
+      <div id="homeRecentOrders"></div>
+    </div>
+
+    <!-- ── PANEL: PEDIDOS ── -->
+    <div id="panelPedidos" class="panel">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:0.75rem">
+        <div>
+          <div class="section-title" style="margin-bottom:0">Meus Pedidos</div>
+          <div class="section-sub">Histórico completo dos seus pedidos</div>
+        </div>
+        <button class="btn-sm btn-yellow" onclick="openOrderForm()">+ Novo pedido</button>
+      </div>
+      <div id="pedidosList"></div>
+    </div>
+
+    <!-- ── PANEL: PERFIL ── -->
+    <div id="panelPerfil" class="panel">
+      <div class="section-title">Meu Perfil</div>
+      <div class="section-sub">Atualize seus dados cadastrais</div>
+      <div class="card" style="margin-bottom:1rem">
+        <div class="profile-grid">
+          <div class="field"><label>Nome completo</label><input id="pfName" type="text"/></div>
+          <div class="field"><label>Telefone (WhatsApp)</label><input id="pfPhone" type="tel" inputmode="numeric"/></div>
+          <div class="field"><label>CEP</label><input id="pfCep" type="text" maxlength="9" oninput="formatCep(this)" onblur="fetchCepProfile(this.value)"/></div>
+          <div class="field"><label>Número</label><input id="pfNumero" type="text"/></div>
+          <div class="field" style="grid-column:1/-1"><label>Rua</label><input id="pfRua" type="text"/></div>
+          <div class="field"><label>Bairro</label><input id="pfBairro" type="text"/></div>
+          <div class="field"><label>Cidade / UF</label><input id="pfCidade" type="text"/></div>
+        </div>
+        <div style="margin-top:0.5rem;display:flex;gap:0.75rem;flex-wrap:wrap">
+          <button class="btn-save" onclick="saveProfile()">Salvar alterações</button>
+        </div>
+        <div id="profileMsg" class="auth-msg" style="margin-top:0.75rem"></div>
+      </div>
+      <div class="card">
+        <div class="section-title" style="font-size:0.95rem">Alterar senha</div>
+        <div class="form-grid">
+          <div class="field"><label>Nova senha</label><input id="pfPass" type="password" placeholder="Mínimo 6 caracteres"/></div>
+          <div class="field"><label>Confirmar nova senha</label><input id="pfPass2" type="password" placeholder="Repita a senha"/></div>
+        </div>
+        <button class="btn-save" onclick="savePassword()">Alterar senha</button>
+        <div id="passMsg" class="auth-msg" style="margin-top:0.75rem"></div>
+      </div>
+    </div>
+
+    <!-- ── PANEL: ADMIN ── -->
+    <div id="panelAdmin" class="panel">
+      <div class="section-title">Painel Administrativo</div>
+      <div class="section-sub">Visão geral de clientes e pedidos</div>
+
+      <div class="stats-grid" id="adminStats"></div>
+
+      <div style="margin-bottom:1.5rem">
+        <div style="font-size:1rem;font-weight:800;margin-bottom:0.75rem">Clientes cadastrados</div>
+        <div class="search-bar">
+          <input id="adminSearch" type="text" placeholder="Buscar por nome ou telefone..." oninput="renderAdminClients()"/>
+        </div>
+        <div class="orders-wrap">
+          <table>
+            <thead><tr>
+              <th>Nome</th><th>Telefone</th><th>Cidade</th><th>Pedidos</th><th>Cadastro</th><th></th>
+            </tr></thead>
+            <tbody id="adminClientsTbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:1rem;font-weight:800;margin-bottom:0.75rem">Todos os pedidos</div>
+        <div class="orders-wrap">
+          <table>
+            <thead><tr>
+              <th>Cliente</th><th>Data</th><th>Peças</th><th>Valor</th><th>Status</th><th></th>
+            </tr></thead>
+            <tbody id="adminOrdersTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /appScreen -->
+
+<!-- ════════════════════════════════════════
+     ORDER DETAIL MODAL
+════════════════════════════════════════ -->
+<div id="orderModal" class="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <div style="font-size:0.75rem;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:0.25rem">Detalhes do pedido</div>
+        <div style="font-size:1.2rem;font-weight:900" id="modalOrderId"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div id="modalOrderContent"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// STORAGE HELPERS  (localStorage — funciona offline, sem servidor)
+// ═══════════════════════════════════════════
+const LS = {
+  get(k){ try{ return JSON.parse(localStorage.getItem(k)) }catch(e){ return null } },
+  set(k,v){ localStorage.setItem(k, JSON.stringify(v)) },
+  del(k){ localStorage.removeItem(k) }
+};
+
+const USERS_KEY   = "ts_users";
+const SESSION_KEY = "ts_session";
+const ORDERS_KEY  = "ts_orders";
+const ADMIN_PASS  = "tamara2025"; // ← altere aqui a senha do admin
+
+function getUsers(){ return LS.get(USERS_KEY) || {} }
+function setUsers(u){ LS.set(USERS_KEY, u) }
+function getAllOrders(){ return LS.get(ORDERS_KEY) || [] }
+function setAllOrders(o){ LS.set(ORDERS_KEY, o) }
+
+// ─── session ───
+let currentUser = null;
+
+function loadSession(){
+  const s = LS.get(SESSION_KEY);
+  if(!s) return false;
+  const users = getUsers();
+  if(!users[s.phone]) return false;
+  currentUser = { ...users[s.phone], phone: s.phone };
+  return true;
+}
+
+// ═══════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════
+function switchAuthTab(tab){
+  document.querySelectorAll(".auth-tab").forEach(t=>t.classList.remove("active"));
+  event.target.classList.add("active");
+  document.getElementById("loginForm").style.display    = tab==="login"    ? "block" : "none";
+  document.getElementById("registerForm").style.display = tab==="register" ? "block" : "none";
+}
+
+function doLogin(){
+  const phone = document.getElementById("loginPhone").value.trim().replace(/\D/g,"");
+  const pass  = document.getElementById("loginPass").value.trim();
+  const msg   = document.getElementById("loginMsg");
+
+  if(!phone || !pass){ showMsg(msg,"error","Preencha todos os campos"); return; }
+
+  // admin login especial
+  if(phone === "admin" || phone === "0"){
+    if(pass === ADMIN_PASS){
+      currentUser = { name:"Tamara (Admin)", phone:"admin", isAdmin:true, address:{} };
+      LS.set(SESSION_KEY,{phone:"admin"});
+      enterApp(); return;
+    } else { showMsg(msg,"error","Senha incorreta"); return; }
+  }
+
+  const users = getUsers();
+  if(!users[phone]){ showMsg(msg,"error","Telefone não cadastrado"); return; }
+  if(users[phone].pass !== btoa(pass)){ showMsg(msg,"error","Senha incorreta"); return; }
+
+  currentUser = { ...users[phone], phone };
+  LS.set(SESSION_KEY,{phone});
+  enterApp();
+}
+
+function doRegister(){
+  const name   = document.getElementById("regName").value.trim();
+  const phone  = document.getElementById("regPhone").value.trim().replace(/\D/g,"");
+  const cep    = document.getElementById("regCep").value.trim();
+  const numero = document.getElementById("regNumero").value.trim();
+  const rua    = document.getElementById("regRua").value.trim();
+  const bairro = document.getElementById("regBairro").value.trim();
+  const cidade = document.getElementById("regCidade").value.trim();
+  const pass   = document.getElementById("regPass").value.trim();
+  const pass2  = document.getElementById("regPass2").value.trim();
+  const msg    = document.getElementById("registerMsg");
+
+  if(!name||!phone||!pass||!pass2){ showMsg(msg,"error","Preencha os campos obrigatórios"); return; }
+  if(phone.length < 10){ showMsg(msg,"error","Telefone inválido (use DDD + número)"); return; }
+  if(pass.length < 6){ showMsg(msg,"error","Senha deve ter no mínimo 6 caracteres"); return; }
+  if(pass !== pass2){ showMsg(msg,"error","As senhas não coincidem"); return; }
+
+  const users = getUsers();
+  if(users[phone]){ showMsg(msg,"error","Telefone já cadastrado"); return; }
+
+  users[phone] = {
+    name, pass: btoa(pass),
+    address:{ cep, numero, rua, bairro, cidade },
+    createdAt: new Date().toISOString()
+  };
+  setUsers(users);
+
+  currentUser = { ...users[phone], phone };
+  LS.set(SESSION_KEY,{phone});
+  showMsg(msg,"success","Cadastro realizado! Entrando...");
+  setTimeout(enterApp, 700);
+}
+
+function doLogout(){
+  LS.del(SESSION_KEY);
+  currentUser = null;
+  document.getElementById("authScreen").classList.add("active");
+  document.getElementById("appScreen").classList.remove("active");
+  document.getElementById("loginPhone").value="";
+  document.getElementById("loginPass").value="";
+  document.getElementById("loginMsg").style.display="none";
+  document.getElementById("loginMsg").className="auth-msg";
+}
+
+function enterApp(){
+  document.getElementById("authScreen").classList.remove("active");
+  document.getElementById("appScreen").classList.add("active");
+  document.getElementById("topbarName").textContent = currentUser.name.split(" ")[0];
+
+  if(currentUser.isAdmin){
+    document.getElementById("adminChip").style.display="inline-flex";
+    document.getElementById("adminTab").style.display="block";
+  } else {
+    document.getElementById("adminChip").style.display="none";
+    document.getElementById("adminTab").style.display="none";
+  }
+
+  showPanel("panelHome", document.querySelector('[data-panel="panelHome"]'));
+  renderHome();
+}
+
+// ═══════════════════════════════════════════
+// PANEL NAVIGATION
+// ═══════════════════════════════════════════
+function showPanel(id, btn){
+  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".nav-tab").forEach(t=>t.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  if(btn) btn.classList.add("active");
+
+  if(id==="panelPedidos") renderPedidos();
+  if(id==="panelPerfil")  renderPerfil();
+  if(id==="panelAdmin")   renderAdmin();
+}
+
+// ═══════════════════════════════════════════
+// HOME
+// ═══════════════════════════════════════════
+function renderHome(){
+  const myOrders = getMyOrders();
+  const totalPcs = myOrders.reduce((s,o)=>s+o.totalPieces,0);
+  const totalVal = myOrders.reduce((s,o)=>s+o.totalValue,0);
+
+  document.getElementById("homeStats").innerHTML = `
+    <div class="card"><div class="card-title">Total de pedidos</div><div class="card-value">${myOrders.length}</div></div>
+    <div class="card"><div class="card-title">Peças pedidas</div><div class="card-value">${totalPcs}</div></div>
+    <div class="card"><div class="card-title">Valor total</div><div class="card-value" style="font-size:1.2rem">${money(totalVal)}</div></div>
+  `;
+
+  const recent = myOrders.slice(-5).reverse();
+  document.getElementById("homeRecentOrders").innerHTML = recent.length===0
+    ? `<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">Você ainda não fez nenhum pedido.</div></div>`
+    : renderOrdersTable(recent, false);
+}
+
+// ═══════════════════════════════════════════
+// PEDIDOS
+// ═══════════════════════════════════════════
+function getMyOrders(){
+  const all = getAllOrders();
+  if(currentUser.isAdmin) return all;
+  return all.filter(o=>o.clientPhone === currentUser.phone);
+}
+
+function renderPedidos(){
+  const orders = getMyOrders().reverse();
+  document.getElementById("pedidosList").innerHTML = orders.length===0
+    ? `<div class="empty-state"><div class="empty-icon">📦</div><div class="empty-text">Nenhum pedido ainda.<br>Clique em "Novo pedido" para começar.</div></div>`
+    : renderOrdersTable(orders, false);
+}
+
+function renderOrdersTable(orders, isAdmin){
+  const rows = orders.map(o=>`
+    <tr>
+      ${isAdmin ? `<td class="client-row">${escH(o.clientName)}<br><span style="font-size:0.75rem;color:var(--muted)">${fmtPhone(o.clientPhone)}</span></td>` : ""}
+      <td>${fmtDate(o.createdAt)}</td>
+      <td>${o.totalPieces} peça(s)</td>
+      <td style="font-weight:700">${money(o.totalValue)}</td>
+      <td><span class="badge badge-${statusColor(o.status)}">${o.status||"Recebido"}</span></td>
+      <td><button class="btn-sm btn-ghost" onclick="openOrderDetail('${o.id}')">Ver</button>
+          ${isAdmin?`<button class="btn-sm btn-yellow" style="margin-left:4px" onclick="changeStatus('${o.id}')">Status</button>`:""}
+      </td>
+    </tr>`).join("");
+
+  return `<div class="orders-wrap"><table>
+    <thead><tr>
+      ${isAdmin?"<th>Cliente</th>":""}
+      <th>Data</th><th>Peças</th><th>Valor</th><th>Status</th><th></th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table></div>`;
+}
+
+function statusColor(s){
+  const m = {Recebido:"blue",Produção:"yellow",Concluído:"green",Cancelado:"red"};
+  return m[s]||"blue";
+}
+
+// ═══════════════════════════════════════════
+// PERFIL
+// ═══════════════════════════════════════════
+function renderPerfil(){
+  if(currentUser.isAdmin) return;
+  const u = currentUser;
+  document.getElementById("pfName").value   = u.name||"";
+  document.getElementById("pfPhone").value  = u.phone||"";
+  document.getElementById("pfCep").value    = u.address?.cep||"";
+  document.getElementById("pfNumero").value = u.address?.numero||"";
+  document.getElementById("pfRua").value    = u.address?.rua||"";
+  document.getElementById("pfBairro").value = u.address?.bairro||"";
+  document.getElementById("pfCidade").value = u.address?.cidade||"";
+}
+
+function saveProfile(){
+  const msg = document.getElementById("profileMsg");
+  const name = document.getElementById("pfName").value.trim();
+  if(!name){ showMsg(msg,"error","Nome é obrigatório"); return; }
+
+  const users = getUsers();
+  users[currentUser.phone].name    = name;
+  users[currentUser.phone].address = {
+    cep:    document.getElementById("pfCep").value.trim(),
+    numero: document.getElementById("pfNumero").value.trim(),
+    rua:    document.getElementById("pfRua").value.trim(),
+    bairro: document.getElementById("pfBairro").value.trim(),
+    cidade: document.getElementById("pfCidade").value.trim(),
+  };
+  setUsers(users);
+  currentUser = { ...users[currentUser.phone], phone: currentUser.phone };
+  document.getElementById("topbarName").textContent = currentUser.name.split(" ")[0];
+  showMsg(msg,"success","Perfil atualizado com sucesso!");
+}
+
+function savePassword(){
+  const msg  = document.getElementById("passMsg");
+  const pass = document.getElementById("pfPass").value.trim();
+  const pass2= document.getElementById("pfPass2").value.trim();
+  if(pass.length < 6){ showMsg(msg,"error","Senha deve ter no mínimo 6 caracteres"); return; }
+  if(pass !== pass2){  showMsg(msg,"error","As senhas não coincidem"); return; }
+
+  const users = getUsers();
+  users[currentUser.phone].pass = btoa(pass);
+  setUsers(users);
+  document.getElementById("pfPass").value="";
+  document.getElementById("pfPass2").value="";
+  showMsg(msg,"success","Senha alterada com sucesso!");
+}
+
+// ═══════════════════════════════════════════
+// ADMIN
+// ═══════════════════════════════════════════
+function renderAdmin(){
+  if(!currentUser.isAdmin) return;
+  const users  = getUsers();
+  const orders = getAllOrders();
+
+  const totalClients = Object.keys(users).length;
+  const totalOrders  = orders.length;
+  const totalPieces  = orders.reduce((s,o)=>s+o.totalPieces,0);
+  const totalValue   = orders.reduce((s,o)=>s+o.totalValue,0);
+
+  document.getElementById("adminStats").innerHTML = `
+    <div class="card"><div class="card-title">Clientes</div><div class="card-value">${totalClients}</div></div>
+    <div class="card"><div class="card-title">Pedidos</div><div class="card-value">${totalOrders}</div></div>
+    <div class="card"><div class="card-title">Peças</div><div class="card-value">${totalPieces}</div></div>
+    <div class="card"><div class="card-title">Receita</div><div class="card-value" style="font-size:1.1rem">${money(totalValue)}</div></div>
+  `;
+
+  renderAdminClients();
+  renderAdminOrders();
+}
+
+function renderAdminClients(){
+  const q = (document.getElementById("adminSearch")?.value||"").toLowerCase();
+  const users  = getUsers();
+  const orders = getAllOrders();
+
+  const rows = Object.entries(users)
+    .filter(([phone,u])=> !q || u.name.toLowerCase().includes(q) || phone.includes(q))
+    .map(([phone,u])=>{
+      const qty = orders.filter(o=>o.clientPhone===phone).length;
+      return `<tr class="client-row">
+        <td>${escH(u.name)}</td>
+        <td>${fmtPhone(phone)}</td>
+        <td>${escH(u.address?.cidade||"—")}</td>
+        <td><span class="badge badge-yellow">${qty}</span></td>
+        <td style="font-size:0.78rem;color:var(--muted)">${fmtDate(u.createdAt)}</td>
+        <td><button class="btn-sm btn-ghost" onclick="viewClientOrders('${phone}')">Ver pedidos</button></td>
+      </tr>`;
+    }).join("");
+
+  document.getElementById("adminClientsTbody").innerHTML = rows || `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Nenhum cliente encontrado</td></tr>`;
+}
+
+function renderAdminOrders(){
+  const orders = getAllOrders().slice().reverse();
+  const rows   = orders.map(o=>`
+    <tr>
+      <td style="font-weight:700">${escH(o.clientName)}</td>
+      <td>${fmtDate(o.createdAt)}</td>
+      <td>${o.totalPieces}</td>
+      <td style="font-weight:700">${money(o.totalValue)}</td>
+      <td><span class="badge badge-${statusColor(o.status)}">${o.status||"Recebido"}</span></td>
+      <td>
+        <button class="btn-sm btn-ghost" onclick="openOrderDetail('${o.id}')">Ver</button>
+        <button class="btn-sm btn-yellow" style="margin-left:4px" onclick="changeStatus('${o.id}')">Status</button>
+      </td>
+    </tr>`).join("");
+
+  document.getElementById("adminOrdersTbody").innerHTML = rows || `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted)">Nenhum pedido ainda</td></tr>`;
+}
+
+function viewClientOrders(phone){
+  const users = getUsers();
+  const u     = users[phone];
+  if(!u) return;
+  const orders = getAllOrders().filter(o=>o.clientPhone===phone).reverse();
+  const content = orders.length===0
+    ? `<p style="color:var(--muted);text-align:center;padding:2rem">Nenhum pedido</p>`
+    : renderOrdersTable(orders, false);
+  document.getElementById("modalOrderId").textContent  = u.name;
+  document.getElementById("modalOrderContent").innerHTML = `
+    <p style="font-size:0.82rem;color:var(--muted);margin-bottom:1rem">${fmtPhone(phone)} · ${escH(u.address?.cidade||"")}</p>
+    ${content}`;
+  document.getElementById("orderModal").classList.add("open");
+}
+
+function changeStatus(orderId){
+  const statuses = ["Recebido","Produção","Concluído","Cancelado"];
+  const orders   = getAllOrders();
+  const idx      = orders.findIndex(o=>o.id===orderId);
+  if(idx===-1) return;
+  const cur    = orders[idx].status||"Recebido";
+  const next   = statuses[(statuses.indexOf(cur)+1) % statuses.length];
+  orders[idx].status = next;
+  setAllOrders(orders);
+  renderAdmin();
+  if(document.getElementById("orderModal").classList.contains("open")) openOrderDetail(orderId);
+}
+
+// ═══════════════════════════════════════════
+// ORDER DETAIL MODAL
+// ═══════════════════════════════════════════
+function openOrderDetail(id){
+  const order = getAllOrders().find(o=>o.id===id);
+  if(!order) return;
+
+  const prodRows = order.products.map(p=>`
+    <tr>
+      <td style="font-weight:700">${escH(p.name)}</td>
+      <td>${p.quantity} peça(s)</td>
+      <td>${money(p.subtotal)}</td>
+    </tr>`).join("");
+
+  const pieces = order.products.flatMap(p=>(p.pieces||[]).map(pc=>({...pc,product:p.name})));
+  const pieceRows = pieces.map((pc,i)=>`
+    <div class="order-item-row">
+      <div class="order-item-num">${i+1}</div>
+      <div style="flex:1">
+        <span style="font-weight:700">${escH(pc.playerName||"—")}</span>
+        <span style="color:var(--muted);font-size:0.78rem;margin-left:6px">${escH(pc.product)}</span>
+      </div>
+      <span class="badge badge-yellow">${escH(pc.size||"—")}</span>
+      <span style="color:var(--muted);font-size:0.78rem">#${escH(pc.shirtNumber||"—")}</span>
+      <span style="color:var(--muted);font-size:0.78rem">${escH(pc.model||"—")}</span>
+    </div>`).join("");
+
+  document.getElementById("modalOrderId").textContent = `Pedido ${order.id.slice(-6).toUpperCase()}`;
+  document.getElementById("modalOrderContent").innerHTML = `
+    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:1.25rem">
+      <span class="badge badge-${statusColor(order.status)}">${order.status||"Recebido"}</span>
+      <span style="font-size:0.82rem;color:var(--muted)">${fmtDate(order.createdAt)}</span>
+      <span style="font-size:0.82rem;color:var(--muted)">${escH(order.clientName)}</span>
+    </div>
+    <div class="orders-wrap" style="margin-bottom:1rem">
+      <table>
+        <thead><tr><th>Produto</th><th>Qtd</th><th>Subtotal</th></tr></thead>
+        <tbody>${prodRows}</tbody>
+        <tfoot><tr style="background:var(--bg3)">
+          <td colspan="2" style="padding:0.75rem 1rem;font-weight:800">Total</td>
+          <td style="padding:0.75rem 1rem;font-weight:900;color:var(--yellow)">${money(order.totalValue)}</td>
+        </tr></tfoot>
+      </table>
+    </div>
+    ${pieces.length>0?`<div style="font-size:0.8rem;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:0.5rem">Peças individuais</div>
+    <div class="order-items-list">${pieceRows}</div>`:""}
+  `;
+  document.getElementById("orderModal").classList.add("open");
+}
+
+function closeModal(){
+  document.getElementById("orderModal").classList.remove("open");
+}
+
+// ═══════════════════════════════════════════
+// OPEN PEDIDO FORM (redireciona para pedido.html)
+// ═══════════════════════════════════════════
+function openOrderForm(){
+  // Salva contexto do cliente para o pedido.html usar
+  LS.set("ts_active_client",{
+    name:  currentUser.name,
+    phone: currentUser.phone,
+    returnTo: window.location.href
+  });
+  // Tenta abrir pedido.html na mesma pasta
+  window.location.href = "pedido.html";
+}
+
+// ═══════════════════════════════════════════
+// RECEIVE ORDER FROM PEDIDO.HTML
+// (pedido.html chama: window.saveOrderToSystem(orderData))
+// ═══════════════════════════════════════════
+window.saveOrderToSystem = function(orderData){
+  const client = LS.get("ts_active_client");
+  if(!client) return;
+  const orders = getAllOrders();
+  const newOrder = {
+    id:          "ord_" + Date.now(),
+    clientPhone: client.phone,
+    clientName:  client.name,
+    status:      "Recebido",
+    createdAt:   new Date().toISOString(),
+    totalPieces: orderData.totalPieces,
+    totalValue:  orderData.totalValue,
+    products:    orderData.products,
+  };
+  orders.push(newOrder);
+  setAllOrders(orders);
+};
+
+// ═══════════════════════════════════════════
+// CEP LOOKUP
+// ═══════════════════════════════════════════
+function formatCep(el){
+  let v = el.value.replace(/\D/g,"").slice(0,8);
+  if(v.length>5) v = v.slice(0,5)+"-"+v.slice(5);
+  el.value = v;
+}
+
+async function fetchCep(cep){
+  const digits = cep.replace(/\D/g,"");
+  if(digits.length!==8) return;
+  try{
+    const r = await fetch(`https://viacep.com.br/ws/${digits}/json/`);
+    const d = await r.json();
+    if(d.erro) return;
+    document.getElementById("regRua").value    = d.logradouro||"";
+    document.getElementById("regBairro").value = d.bairro||"";
+    document.getElementById("regCidade").value = `${d.localidade||""}${d.uf?" / "+d.uf:""}`;
+    document.getElementById("regNumero").focus();
+  }catch(e){}
+}
+
+async function fetchCepProfile(cep){
+  const digits = cep.replace(/\D/g,"");
+  if(digits.length!==8) return;
+  try{
+    const r = await fetch(`https://viacep.com.br/ws/${digits}/json/`);
+    const d = await r.json();
+    if(d.erro) return;
+    document.getElementById("pfRua").value    = d.logradouro||"";
+    document.getElementById("pfBairro").value = d.bairro||"";
+    document.getElementById("pfCidade").value = `${d.localidade||""}${d.uf?" / "+d.uf:""}`;
+    document.getElementById("pfNumero").focus();
+  }catch(e){}
+}
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+function money(v){ return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(v||0) }
+function escH(v){ return String(v??"")}
+function fmtDate(iso){ if(!iso) return "—"; const d=new Date(iso); return d.toLocaleDateString("pt-BR") }
+function fmtPhone(p){
+  const d = String(p).replace(/\D/g,"");
+  if(d.length===11) return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
+  if(d.length===10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
+  return p;
+}
+function showMsg(el, type, text){
+  el.className = "auth-msg " + type;
+  el.textContent = text;
+  el.style.display = "block";
+  if(type==="success") setTimeout(()=>{ el.style.display="none" }, 3500);
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+document.addEventListener("DOMContentLoaded",()=>{
+  // Verifica se voltou do pedido.html com um pedido salvo
+  const pending = LS.get("ts_pending_order");
+  if(pending){
+    LS.del("ts_pending_order");
+    if(loadSession()){
+      window.saveOrderToSystem(pending);
+    }
+  }
+
+  if(loadSession()){
+    enterApp();
+  }
+});
+</script>
+</body>
+</html>
